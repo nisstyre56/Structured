@@ -15,9 +15,6 @@ import qualified Filesystem.Path.CurrentOS as FP
 import qualified Control.Concurrent.Async as CA
 import qualified Data.Text as T
 
-notHidden :: FP.FilePath -> Bool
-notHidden fname = (T.head $ decodeFile $ FP.filename fname) /= '.'
-
 decodeFile :: FP.FilePath -> T.Text
 decodeFile fname =
     case FP.toText fname of
@@ -30,6 +27,9 @@ recurse files subdirs
     | otherwise = do
             subs <- CA.mapConcurrently lsRecursive subdirs
             return $ files >< (join subs)
+
+notHidden :: FP.FilePath -> Bool
+notHidden fname = (T.head $ decodeFile $ FP.filename fname) /= '.'
 
 getUnhidden :: S.Seq FP.FilePath -> S.Seq FP.FilePath
 getUnhidden = S.filter notHidden
